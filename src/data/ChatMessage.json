@@ -1,44 +1,44 @@
 {
-    "name": "ChatMessage",
-    "type": "object",
-    "properties": {
-        "role": {
-            "type": "string",
-            "enum": [
-                "user",
-                "assistant"
-            ],
-            "description": "Message sender role"
-        },
-        "content": {
-            "type": "string",
-            "description": "Message content"
-        },
-        "input_type": {
-            "type": "string",
-            "enum": [
-                "text",
-                "voice",
-                "image"
-            ],
-            "default": "text",
-            "description": "Type of input used"
-        },
-        "model_used": {
-            "type": "string",
-            "description": "Ollama model that generated the response"
-        },
-        "conversation_id": {
-            "type": "string",
-            "description": "ID to group messages in conversations"
-        },
-        "processing_time": {
-            "type": "number",
-            "description": "Time taken to process the message"
-        }
+  "name": "ChatMessage",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "user",
+        "assistant"
+      ],
+      "description": "Message sender role"
     },
-    "required": [
-        "role",
-        "content"
-    ]
+    "content": {
+      "type": "string",
+      "description": "Message content"
+    },
+    "input_type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "voice",
+        "image"
+      ],
+      "default": "text",
+      "description": "Type of input used"
+    },
+    "model_used": {
+      "type": "string",
+      "description": "Ollama model that generated the response"
+    },
+    "conversation_id": {
+      "type": "string",
+      "description": "ID to group messages in conversations"
+    },
+    "processing_time": {
+      "type": "number",
+      "description": "Time taken to process the message"
+    }
+  },
+  "required": [
+    "role",
+    "content"
+  ]
 }

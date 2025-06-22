@@ -1,54 +1,40 @@
-# React + TypeScript + Vite
+# OllamaChat Requirements
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Python Backend Dependencies
 
-Currently, two official plugins are available:
+Create a `requirements.txt` file in your backend directory with these dependencies:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```txt
+fastapi==0.104.1
+uvicorn==0.24.0
+ollama==0.1.7
+python-multipart==0.0.6
+pydantic==2.5.0
+speechrecognition==3.10.0
+pyaudio==0.2.11
+pillow==10.1.0
+pytesseract==0.3.10
+opencv-python==4.8.1.78
+numpy==1.24.3
+python-dotenv==1.0.0
+aiofiles==0.23.2
+websockets==12.0
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Setup Instructions
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Install Python dependencies: `pip install -r requirements.txt`
+2. Install Tesseract OCR for image text extraction
+3. Make sure Ollama is running with your desired models
+4. The frontend will connect to your Python backend for voice/image processing
+5. Text inputs are handled directly through the UI simulation
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## Features
+
+- **Multi-modal input**: Text, voice recording, image upload
+- **OCR processing**: Extract text from images using Tesseract
+- **Voice processing**: Convert audio to text (requires implementation)
+- **TypeScript support**: Full type safety for React components
+- **Real-time chat**: Streaming responses with conversation history
+- **Model selection**: Switch between different Ollama models
+- **Export functionality**: Download chat history as JSON

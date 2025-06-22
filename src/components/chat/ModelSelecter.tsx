@@ -2,21 +2,28 @@ import React from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Brain, Zap, Activity } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ModelSelectorProps } from "../types";
 
-const modelSizes = {
+interface ModelSizeInfo {
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  label: string;
+}
+
+const modelSizes: Record<string, ModelSizeInfo> = {
   "1.5b": { icon: Activity, color: "bg-green-100 text-green-700", label: "Fast" },
   "8b": { icon: Zap, color: "bg-blue-100 text-blue-700", label: "Balanced" },
   "14b": { icon: Brain, color: "bg-purple-100 text-purple-700", label: "Smart" },
   "32b": { icon: Brain, color: "bg-red-100 text-red-700", label: "Powerful" }
 };
 
-export default function ModelSelector({ selectedModel, onModelChange, models = [] }) {
+const ModelSelector: React.FC<ModelSelectorProps> = ({ selectedModel, onModelChange, models = [] }) => {
   // Default models if none provided
   const defaultModels = [
-    { name: "deepseek-r1:1.5b", display_name: "DeepSeek R1 1.5B", size: "1.5b", description: "Fast and efficient" },
-    { name: "deepseek-r1:8b", display_name: "DeepSeek R1 8B", size: "8b", description: "Balanced performance" },
-    { name: "deepseek-r1:14b", display_name: "DeepSeek R1 14B", size: "14b", description: "High capability" },
-    { name: "deepseek-r1:32b", display_name: "DeepSeek R1 32B", size: "32b", description: "Maximum performance" }
+    { id: "1", name: "deepseek-r1:1.5b", display_name: "DeepSeek R1 1.5B", size: "1.5b", description: "Fast and efficient", is_active: true, created_date: "", updated_date: "", created_by: "" },
+    { id: "2", name: "deepseek-r1:8b", display_name: "DeepSeek R1 8B", size: "8b", description: "Balanced performance", is_active: true, created_date: "", updated_date: "", created_by: "" },
+    { id: "3", name: "deepseek-r1:14b", display_name: "DeepSeek R1 14B", size: "14b", description: "High capability", is_active: true, created_date: "", updated_date: "", created_by: "" },
+    { id: "4", name: "deepseek-r1:32b", display_name: "DeepSeek R1 32B", size: "32b", description: "Maximum performance", is_active: true, created_date: "", updated_date: "", created_by: "" }
   ];
 
   const availableModels = models.length > 0 ? models : defaultModels;
@@ -58,4 +65,6 @@ export default function ModelSelector({ selectedModel, onModelChange, models = [
       </Select>
     </div>
   );
-}
+};
+
+export default ModelSelector;

@@ -116,7 +116,7 @@ export default function ModelsPage() {
         {models.map((model) => {
           const sizeInfo = modelSizes[model.size] || modelSizes["8b"];
           const SizeIcon = sizeInfo.icon;
-
+          
           return (
             <Card key={model.id} className={`hover-lift ${model.is_active ? 'ring-2 ring-blue-200' : ''}`}>
               <CardHeader className="pb-3">
@@ -130,15 +130,15 @@ export default function ModelsPage() {
                       <p className="text-sm text-gray-500 font-mono">{model.name}</p>
                     </div>
                   </div>
-                  <Badge
-                    variant={model.is_active ? "default" : "secondary"}
+                  <Badge 
+                    variant={model.is_active ? "default" : "secondary"} 
                     className={`${model.is_active ? sizeInfo.color : 'bg-gray-100 text-gray-600'}`}
                   >
                     {model.is_active ? 'Active' : 'Inactive'}
                   </Badge>
                 </div>
               </CardHeader>
-
+              
               <CardContent className="space-y-4">
                 <div>
                   <Badge variant="outline" className={`${sizeInfo.color} border mb-2`}>
@@ -147,7 +147,7 @@ export default function ModelsPage() {
                   <p className="text-sm text-gray-600">{model.description}</p>
                   <p className="text-xs text-gray-500 mt-1">{sizeInfo.description}</p>
                 </div>
-
+                
                 <div className="flex gap-2">
                   <Button
                     variant={model.is_active ? "outline" : "default"}
@@ -162,7 +162,7 @@ export default function ModelsPage() {
             </Card>
           );
         })}
-
+        
         {/* Add Model Card */}
         <Card className="border-2 border-dashed border-gray-200 hover:border-gray-300 transition-colors cursor-pointer">
           <CardContent className="flex flex-col items-center justify-center h-full p-8 text-center">
@@ -196,7 +196,7 @@ export default function ModelsPage() {
               <tbody className="divide-y divide-gray-100">
                 {models.map((model) => {
                   const sizeInfo = modelSizes[model.size] || modelSizes["8b"];
-
+                  
                   return (
                     <tr key={model.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">

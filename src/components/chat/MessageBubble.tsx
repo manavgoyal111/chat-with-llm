@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { User, Bot, Mic, Image as ImageIcon, Type } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { MessageBubbleProps } from "../types";
 
 const inputTypeIcons = {
   text: Type,
@@ -16,9 +17,9 @@ const inputTypeColors = {
   image: "bg-green-100 text-green-700"
 };
 
-export default function MessageBubble({ message, isStreaming = false }) {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = false }) => {
   const isUser = message.role === "user";
-  const InputIcon = inputTypeIcons[message.input_type] || Type;
+  const InputIcon = inputTypeIcons[message.input_type || 'text'];
 
   return (
     <motion.div
@@ -83,4 +84,6 @@ export default function MessageBubble({ message, isStreaming = false }) {
       )}
     </motion.div>
   );
-}
+};
+
+export default MessageBubble;

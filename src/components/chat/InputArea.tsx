@@ -8,23 +8,24 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { InputAreaProps } from "src/types/message";
 
-export default function InputArea({ 
+const InputArea: React.FC<InputAreaProps> = ({ 
   onSendMessage, 
   isProcessing = false,
   placeholder = "Type your message..." 
-}) {
-  const [message, setMessage] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingTime, setRecordingTime] = useState(0);
-  const [dragActive, setDragActive] = useState(false);
+}) => {
+  const [message, setMessage] = useState<string>("");
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [recordingTime, setRecordingTime] = useState<number>(0);
+  const [dragActive, setDragActive] = useState<boolean>(false);
   
-  const textareaRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const recordingTimerRef = useRef(null);
-  const fileInputRef = useRef(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim() && !isProcessing) {
       onSendMessage(message.trim(), "text");
@@ -32,20 +33,20 @@ export default function InputArea({
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
     }
   };
 
-  const startRecording = async () => {
+  const startRecording = async (): Promise<void> => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       
-      const chunks = [];
+      const chunks: Blob[] = [];
       mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
       
       mediaRecorder.onstop = () => {
@@ -68,15 +69,17 @@ export default function InputArea({
     }
   };
 
-  const stopRecording = () => {
+  const stopRecording = (): void => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
-      clearInterval(recordingTimerRef.current);
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+      }
     }
   };
 
-  const handleDrag = (e) => {
+  const handleDrag = (e: React.DragEvent): void => {
     e.preventDefault();
     e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
@@ -86,7 +89,7 @@ export default function InputArea({
     }
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = (e: React.DragEvent): void => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
@@ -99,15 +102,15 @@ export default function InputArea({
     }
   };
 
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0];
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const file = e.target.files?.[0];
     if (file && file.type.startsWith("image/")) {
       onSendMessage(file, "image");
     }
     e.target.value = "";
   };
 
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -229,4 +232,6 @@ export default function InputArea({
       </form>
     </div>
   );
-}
+};
+
+export default InputArea;
