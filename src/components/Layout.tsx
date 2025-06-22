@@ -35,7 +35,7 @@ const navigationItems = [
   },
 ];
 
-export default function Layout({ children, currentPageName }) {
+const Layout: React.FC = ({ children, currentPageName }) => {
   const location = useLocation();
 
   return (
@@ -166,3 +166,5 @@ export default function Layout({ children, currentPageName }) {
     </SidebarProvider>
   );
 }
+
+export default Layout;
