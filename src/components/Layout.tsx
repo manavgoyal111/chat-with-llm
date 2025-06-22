@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { MessageCircle, Settings, Brain, History } from "lucide-react";
+import { MessageCircle, Brain, History } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -34,6 +34,10 @@ const navigationItems = [
     icon: History,
   },
 ];
+
+const createPageUrl = (pageName) => {
+  return `/${pageName.toLowerCase()}`;
+};
 
 const Layout: React.FC = ({ children, currentPageName }) => {
   const location = useLocation();
