@@ -1,0 +1,31 @@
+{
+    "name": "OllamaModel",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Model name as it appears in Ollama"
+        },
+        "display_name": {
+            "type": "string",
+            "description": "User-friendly display name"
+        },
+        "size": {
+            "type": "string",
+            "description": "Model size (e.g., 1.5b, 8b, 14b, 32b)"
+        },
+        "description": {
+            "type": "string",
+            "description": "Model description"
+        },
+        "is_active": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether model is available"
+        }
+    },
+    "required": [
+        "name",
+        "display_name"
+    ]
+}
