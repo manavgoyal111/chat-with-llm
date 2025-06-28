@@ -9,6 +9,7 @@ export interface FileUploadResponse {
 export interface InvokeParams {
   prompt: string;
   file_urls?: string[];
+  model_name?: string;
 }
 
 export const UploadFile = async ({ file }: { file: File }): Promise<FileUploadResponse> => {
@@ -19,6 +20,7 @@ export const UploadFile = async ({ file }: { file: File }): Promise<FileUploadRe
 export const InvokeLLM = async ({
   prompt,
   file_urls = [],
+  model_name = "deepseek-r1:8b",
 }: InvokeParams): Promise<string> => {
   const client = await gradioClient;
 
@@ -38,10 +40,10 @@ export const InvokeLLM = async ({
   }
 
   const payload = {
-    text: prompt || "",     // Required
-    audio,                  // Can be null
-    image,                  // Can be null
-    // model_name: "deepseek-r1:14b", // Optional, but safe to send
+    text: prompt || "",
+    audio,
+    image,
+    model_name
   };
 
   const res = await client.predict("/predict", payload);

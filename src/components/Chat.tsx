@@ -11,7 +11,7 @@ import type { ChatMessage as ChatMessageType, InputType, FileUploadResponse } fr
 
 const ChatPage: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
-  const [selectedModel, setSelectedModel] = useState<string>("deepseek-r1:8b");
+  const [selectedModel, setSelectedModel] = useState<string>("deepseek-r1:1.5b");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [streamingMessage, setStreamingMessage] = useState<ChatMessageType | null>(null);
   const [conversationId] = useState<string>(() => `conv_${Date.now()}`);
@@ -49,7 +49,8 @@ const ChatPage: React.FC = () => {
       // Use LLM to convert audio to text (simulated - in real app you'd use speech-to-text)
       const textResponse = await InvokeLLM({
         prompt: `Convert this audio file to text. If you cannot process audio, respond with: "Voice input received - please implement speech-to-text integration"`,
-        file_urls: [response.file_url]
+        file_urls: [response.file_url],
+        model_name: selectedModel,
       });
       
       return textResponse || "Voice message processed";
@@ -66,7 +67,8 @@ const ChatPage: React.FC = () => {
       // Use OCR via LLM to extract text from image
       const textResponse = await InvokeLLM({
         prompt: `Please analyze this image and extract any text content using OCR. If there is no text, describe what you see in the image. Provide a clear, detailed response.`,
-        file_urls: [response.file_url]
+        file_urls: [response.file_url],
+        model_name: selectedModel,
       });
       
       return textResponse || "Image processed";
@@ -122,7 +124,8 @@ const ChatPage: React.FC = () => {
 
       // Get response from LLM (simulating Ollama response)
       const response = await InvokeLLM({
-        prompt: `You are an AI assistant running on the ${selectedModel} model via Ollama. The user said: "${textContent}". Please provide a helpful, detailed response. Previous conversation context: ${JSON.stringify(conversationHistory.slice(-6))}`
+        prompt: `You are an AI assistant running on the ${selectedModel} model via Ollama. The user said: "${textContent}". Please provide a helpful, detailed response. Previous conversation context: ${JSON.stringify(conversationHistory.slice(-6))}`,
+        model_name: selectedModel,
       });
 
       setStreamingMessage(null);
