@@ -82,7 +82,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           }
         `}
       </style>
-      <div className="min-h-screen flex w-full">
+
+      <div className="min-h-screen flex w-screen">
         <Sidebar className="border-r border-gray-100 bg-white/80 backdrop-blur-xl">
           <SidebarHeader className="border-b border-gray-100 p-6">
             <div className="flex items-center gap-3">
@@ -95,7 +96,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </div>
             </div>
           </SidebarHeader>
-          
+
           <SidebarContent className="p-4">
             <SidebarGroup>
               <SidebarGroupLabel className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 py-3">
@@ -105,13 +106,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <SidebarMenu className="space-y-2">
                   {navigationItems.map((item) => (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton 
-                        asChild 
-                        className={`hover-lift rounded-xl transition-all duration-300 ${
-                          location.pathname === item.url ? 
-                          'bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 shadow-sm border border-blue-100' : 
-                          'hover:bg-gray-50 text-gray-600 hover:text-gray-900'
-                        }`}
+                      <SidebarMenuButton
+                        asChild
+                        className={`hover-lift rounded-xl transition-all duration-300 ${location.pathname === item.url ?
+                            'bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 shadow-sm border border-blue-100' :
+                            'hover:bg-gray-50 text-gray-600 hover:text-gray-900'
+                          }`}
                       >
                         <Link to={item.url} className="flex items-center gap-3 px-4 py-3 font-medium">
                           <item.icon className="w-5 h-5" />
