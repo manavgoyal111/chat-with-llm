@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ChatMessage } from "@/entities/ChatMessage";
-import { InvokeLLM, UploadFile } from "@/integrations/Core";
+import { ChatMessageAPI } from "../entities/ChatMessage";
+import { InvokeLLM, UploadFile } from "../integrations/Core";
 import MessageBubble from "../components/chat/MessageBubble";
 import InputArea from "../components/chat/InputArea";
-import ModelSelector from "../components/chat/ModelSelector";
-import { Button } from "@/components/ui/button";
+import ModelSelector from "../components/chat/ModelSelecter";
+import { Button } from "./ui/button";
 import { Trash2, Download, Brain, Type, Mic, Image as ImageIcon } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
-import { ChatMessage as ChatMessageType, InputType, FileUploadResponse } from "../components/types";
+import type { ChatMessage as ChatMessageType, InputType, FileUploadResponse } from "../types/message";
 
 const ChatPage: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
@@ -28,7 +28,7 @@ const ChatPage: React.FC = () => {
 
   const loadMessages = async (): Promise<void> => {
     try {
-      const chatMessages = await ChatMessage.filter(
+      const chatMessages = await ChatMessageAPI.filter(
         { conversation_id: conversationId },
         "-created_date"
       );
@@ -93,7 +93,7 @@ const ChatPage: React.FC = () => {
       }
 
       // Save user message
-      const userMessage = await ChatMessage.create({
+      const userMessage = await ChatMessageAPI.create({
         role: "user",
         content: textContent,
         input_type: inputType,
@@ -130,7 +130,7 @@ const ChatPage: React.FC = () => {
       const processingTime = (Date.now() - startTime) / 1000;
       
       // Save assistant response
-      const assistantMessage = await ChatMessage.create({
+      const assistantMessage = await ChatMessageAPI.create({
         role: "assistant",
         content: response,
         model_used: selectedModel,
@@ -144,7 +144,7 @@ const ChatPage: React.FC = () => {
       console.error("Error sending message:", error);
       setStreamingMessage(null);
       
-      const errorMessage = await ChatMessage.create({
+      const errorMessage = await ChatMessageAPI.create({
         role: "assistant",
         content: "I apologize, but I encountered an error processing your request. Please make sure Ollama is running and try again.",
         model_used: selectedModel,

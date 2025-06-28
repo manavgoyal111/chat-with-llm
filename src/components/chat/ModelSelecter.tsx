@@ -1,8 +1,8 @@
 import React from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Brain, Zap, Activity } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { ModelSelectorProps } from "../types";
+import { Badge } from "../ui/badge";
+import type { ModelSelectorProps } from "../../types/message";
 
 interface ModelSizeInfo {
   icon: React.ComponentType<{ className?: string }>;

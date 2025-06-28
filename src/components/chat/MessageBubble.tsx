@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { User, Bot, Mic, Image as ImageIcon, Type } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "../ui/badge";
 import { format } from "date-fns";
 import type { MessageBubbleProps } from "../../types/message";
 

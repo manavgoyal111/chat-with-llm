@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { ChatMessage } from "@/entities/ChatMessage";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { ChatMessageAPI } from "../entities/ChatMessage";
+import type { ChatMessage } from '../types/message';
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Input } from "./ui/input";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 import { Search, MessageCircle, Download, Calendar, User, Bot } from "lucide-react";
-import { format, startOfDay, endOfDay } from "date-fns";
+import { startOfDay, endOfDay } from "date-fns";
 import MessageBubble from "../components/chat/MessageBubble";
 
+type ModelUsageMap = { [model: string]: number };
+
 export default function HistoryPage() {
-  const [allMessages, setAllMessages] = useState([]);
-  const [filteredMessages, setFilteredMessages] = useState([]);
+  const [allMessages, setAllMessages] = useState<ChatMessage[]>([]);
+  const [filteredMessages, setFilteredMessages] = useState<ChatMessage[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedModel, setSelectedModel] = useState("all");
@@ -33,7 +36,7 @@ export default function HistoryPage() {
 
   const loadHistory = async () => {
     try {
-      const messages = await ChatMessage.list("-created_date", 1000);
+      const messages = await ChatMessageAPI.list("-created_date", 1000);
       setAllMessages(messages);
       calculateStats(messages);
     } catch (error) {
@@ -42,15 +45,15 @@ export default function HistoryPage() {
     setIsLoading(false);
   };
 
-  const calculateStats = (messages) => {
+  const calculateStats = (messages: ChatMessage[]) => {
     const totalMessages = messages.length;
     const conversations = new Set(messages.map(m => m.conversation_id)).size;
     const assistantMessages = messages.filter(m => m.role === "assistant" && m.processing_time);
-    const avgResponseTime = assistantMessages.length > 0 
-      ? assistantMessages.reduce((sum, m) => sum + m.processing_time, 0) / assistantMessages.length 
+    const avgResponseTime = assistantMessages.length > 0
+      ? assistantMessages.reduce((sum, m) => sum + (m.processing_time ?? 0), 0) / assistantMessages.length
       : 0;
-    
-    const modelUsage = {};
+
+    const modelUsage: ModelUsageMap = {};
     messages.forEach(m => {
       if (m.model_used) {
         modelUsage[m.model_used] = (modelUsage[m.model_used] || 0) + 1;
@@ -70,7 +73,7 @@ export default function HistoryPage() {
 
     // Search filter
     if (searchTerm) {
-      filtered = filtered.filter(message => 
+      filtered = filtered.filter(message =>
         message.content.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
@@ -108,7 +111,7 @@ export default function HistoryPage() {
       input_type: msg.input_type,
       processing_time: msg.processing_time
     }));
-    
+
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -164,7 +167,7 @@ export default function HistoryPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="hover-lift">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
@@ -176,7 +179,7 @@ export default function HistoryPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="hover-lift">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
@@ -188,7 +191,7 @@ export default function HistoryPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="hover-lift">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
@@ -220,7 +223,7 @@ export default function HistoryPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
+
             <div>
               <label className="text-sm font-medium text-gray-700 mb-2 block">Date</label>
               <Input
@@ -229,7 +232,7 @@ export default function HistoryPage() {
                 onChange={(e) => setSelectedDate(e.target.value)}
               />
             </div>
-            
+
             <div>
               <label className="text-sm font-medium text-gray-700 mb-2 block">Model</label>
               <select
@@ -243,7 +246,7 @@ export default function HistoryPage() {
                 ))}
               </select>
             </div>
-            
+
             <div>
               <label className="text-sm font-medium text-gray-700 mb-2 block">Input Type</label>
               <select

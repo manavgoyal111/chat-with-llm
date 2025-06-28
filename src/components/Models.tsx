@@ -1,20 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { OllamaModel } from "@/entities/OllamaModel";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { OllamaModelAPI } from "../entities/OllamaModel";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 import { Brain, Zap, Activity, Plus, Settings } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "./ui/alert";
+
+type ModelSizeKey = keyof typeof modelSizes; // "1.5b" | "8b" | "14b" | "32b"
+interface Model {
+  id: string;
+  name: string;
+  display_name: string;
+  size: ModelSizeKey;
+  description: string;
+  is_active: boolean;
+}
 
 const modelSizes = {
   "1.5b": { icon: Activity, color: "bg-green-100 text-green-700 border-green-200", label: "Fast", description: "Quick responses, lower resource usage" },
   "8b": { icon: Zap, color: "bg-blue-100 text-blue-700 border-blue-200", label: "Balanced", description: "Good balance of speed and capability" },
   "14b": { icon: Brain, color: "bg-purple-100 text-purple-700 border-purple-200", label: "Smart", description: "Enhanced reasoning and knowledge" },
   "32b": { icon: Brain, color: "bg-red-100 text-red-700 border-red-200", label: "Powerful", description: "Maximum capability and performance" }
-};
+} as const;
 
 export default function ModelsPage() {
-  const [models, setModels] = useState([]);
+  const [models, setModels] = useState<Model[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -23,7 +33,7 @@ export default function ModelsPage() {
 
   const loadModels = async () => {
     try {
-      const modelList = await OllamaModel.list();
+      const modelList = await OllamaModelAPI.list() as Model[];
       if (modelList.length === 0) {
         // Initialize with default DeepSeek models
         await initializeDefaultModels();
@@ -70,7 +80,7 @@ export default function ModelsPage() {
 
     try {
       for (const model of defaultModels) {
-        await OllamaModel.create(model);
+        await OllamaModelAPI.create(model);
       }
       await loadModels();
     } catch (error) {
@@ -78,9 +88,9 @@ export default function ModelsPage() {
     }
   };
 
-  const toggleModelStatus = async (modelId, currentStatus) => {
+  const toggleModelStatus = async (modelId: string, currentStatus: boolean) => {
     try {
-      await OllamaModel.update(modelId, { is_active: !currentStatus });
+      await OllamaModelAPI.update(modelId, { is_active: !currentStatus });
       await loadModels();
     } catch (error) {
       console.error("Error updating model:", error);
@@ -114,9 +124,9 @@ export default function ModelsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {models.map((model) => {
-          const sizeInfo = modelSizes[model.size] || modelSizes["8b"];
+          const sizeInfo = modelSizes[model.size as ModelSizeKey] || modelSizes["8b"];
           const SizeIcon = sizeInfo.icon;
-          
+
           return (
             <Card key={model.id} className={`hover-lift ${model.is_active ? 'ring-2 ring-blue-200' : ''}`}>
               <CardHeader className="pb-3">
@@ -130,15 +140,15 @@ export default function ModelsPage() {
                       <p className="text-sm text-gray-500 font-mono">{model.name}</p>
                     </div>
                   </div>
-                  <Badge 
-                    variant={model.is_active ? "default" : "secondary"} 
+                  <Badge
+                    variant={model.is_active ? "default" : "secondary"}
                     className={`${model.is_active ? sizeInfo.color : 'bg-gray-100 text-gray-600'}`}
                   >
                     {model.is_active ? 'Active' : 'Inactive'}
                   </Badge>
                 </div>
               </CardHeader>
-              
+
               <CardContent className="space-y-4">
                 <div>
                   <Badge variant="outline" className={`${sizeInfo.color} border mb-2`}>
@@ -147,7 +157,7 @@ export default function ModelsPage() {
                   <p className="text-sm text-gray-600">{model.description}</p>
                   <p className="text-xs text-gray-500 mt-1">{sizeInfo.description}</p>
                 </div>
-                
+
                 <div className="flex gap-2">
                   <Button
                     variant={model.is_active ? "outline" : "default"}
@@ -162,7 +172,7 @@ export default function ModelsPage() {
             </Card>
           );
         })}
-        
+
         {/* Add Model Card */}
         <Card className="border-2 border-dashed border-gray-200 hover:border-gray-300 transition-colors cursor-pointer">
           <CardContent className="flex flex-col items-center justify-center h-full p-8 text-center">
@@ -196,7 +206,7 @@ export default function ModelsPage() {
               <tbody className="divide-y divide-gray-100">
                 {models.map((model) => {
                   const sizeInfo = modelSizes[model.size] || modelSizes["8b"];
-                  
+
                   return (
                     <tr key={model.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">

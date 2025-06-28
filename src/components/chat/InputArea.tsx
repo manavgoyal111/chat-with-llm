@@ -1,28 +1,29 @@
 import React, { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "../ui/button";
+import { Textarea } from "../ui/textarea";
 import { Send, Mic, Image as ImageIcon, MicOff, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { InputAreaProps } from "src/types/message";
+} from "../ui/dropdown-menu";
+import type { InputAreaProps } from "../../types/message";
 
-const InputArea: React.FC<InputAreaProps> = ({ 
-  onSendMessage, 
+const InputArea: React.FC<InputAreaProps> = ({
+  onSendMessage,
   isProcessing = false,
-  placeholder = "Type your message..." 
+  placeholder = "Type your message..."
 }) => {
   const [message, setMessage] = useState<string>("");
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [recordingTime, setRecordingTime] = useState<number>(0);
   const [dragActive, setDragActive] = useState<boolean>(false);
-  
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  // const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const recordingTimerRef = useRef<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -45,25 +46,25 @@ const InputArea: React.FC<InputAreaProps> = ({
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
-      
+
       const chunks: Blob[] = [];
       mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-      
+
       mediaRecorder.onstop = () => {
         const blob = new Blob(chunks, { type: "audio/wav" });
         const file = new File([blob], `voice-${Date.now()}.wav`, { type: "audio/wav" });
         onSendMessage(file, "voice");
         stream.getTracks().forEach(track => track.stop());
       };
-      
+
       mediaRecorder.start();
       setIsRecording(true);
       setRecordingTime(0);
-      
+
       recordingTimerRef.current = setInterval(() => {
         setRecordingTime(prev => prev + 1);
       }, 1000);
-      
+
     } catch (error) {
       console.error("Error accessing microphone:", error);
     }
@@ -93,10 +94,10 @@ const InputArea: React.FC<InputAreaProps> = ({
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
     const imageFile = files.find(file => file.type.startsWith("image/"));
-    
+
     if (imageFile) {
       onSendMessage(imageFile, "image");
     }
@@ -117,10 +118,9 @@ const InputArea: React.FC<InputAreaProps> = ({
   };
 
   return (
-    <div 
-      className={`border-2 border-dashed rounded-2xl p-6 transition-all duration-300 ${
-        dragActive ? "border-blue-400 bg-blue-50" : "border-transparent bg-white"
-      } shadow-lg hover-lift`}
+    <div
+      className={`border-2 border-dashed rounded-2xl p-6 transition-all duration-300 ${dragActive ? "border-blue-400 bg-blue-50" : "border-transparent bg-white"
+        } shadow-lg hover-lift`}
       onDragEnter={handleDrag}
       onDragLeave={handleDrag}
       onDragOver={handleDrag}
@@ -133,7 +133,7 @@ const InputArea: React.FC<InputAreaProps> = ({
         onChange={handleFileSelect}
         className="hidden"
       />
-      
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
           <Textarea
@@ -145,7 +145,7 @@ const InputArea: React.FC<InputAreaProps> = ({
             className="min-h-[80px] resize-none border-0 bg-gray-50 focus:bg-white transition-colors pr-24 text-base leading-relaxed"
             disabled={isProcessing}
           />
-          
+
           <div className="absolute right-3 top-3 flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
