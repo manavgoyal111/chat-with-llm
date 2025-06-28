@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "start": "npm run dev",
+    "start": "npm run dev && gradio chat_in_ui.py",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

@@ -18,27 +18,42 @@ export const UploadFile = async ({ file }: { file: File }): Promise<FileUploadRe
 
 export const InvokeLLM = async ({
   prompt,
-  file_urls,
+  file_urls = [],
 }: InvokeParams): Promise<string> => {
   const client = await gradioClient;
-  const payload: Record<string, unknown> = { prompt };
 
-  // If there's a file, convert it to a gradio-uploadable form
-  if (file_urls?.length) {
+  let audio: unknown = null;
+  let image: unknown = null;
+
+  if (file_urls.length > 0) {
     const blob = await fetch(file_urls[0]).then((r) => r.blob());
-    payload.file = handle_file(blob); // `@gradio/client` helper
+    const handled = handle_file(blob);
+
+    // Heuristic: Treat as audio if prompt suggests it
+    if (/audio|voice|speech/i.test(prompt)) {
+      audio = handled;
+    } else {
+      image = handled;
+    }
   }
 
-  // Call gradio `predict` endpoint
+  const payload = {
+    text: prompt || "",     // Required
+    audio,                  // Can be null
+    image,                  // Can be null
+    // model_name: "deepseek-r1:14b", // Optional, but safe to send
+  };
+
   const res = await client.predict("/predict", payload);
   const data = res.data;
 
-  // Now safely cast the return to string
   if (Array.isArray(data) && typeof data[0] === "string") {
     return data[0];
-  } else if (typeof data === "string") {
+  }
+  if (typeof data === "string") {
     return data;
   }
-  console.warn("Unexpected gradio response", data);
+
+  console.warn("Unexpected Gradio response:", data);
   return "";
 };
