@@ -1,5 +1,7 @@
 # OllamaChat Requirements
 
+npm install -D @tailwindcss/postcss
+
 ## Python Backend Dependencies
 
 Create a `requirements.txt` file in your backend directory with these dependencies:
