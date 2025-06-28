@@ -1,20 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { OllamaModelAPI } from "../entities/OllamaModel";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { Brain, Zap, Activity, Plus, Settings } from "lucide-react";
+import { Brain, Zap, Activity, Settings } from "lucide-react";
 import { Alert, AlertDescription } from "./ui/alert";
-
-type ModelSizeKey = keyof typeof modelSizes; // "1.5b" | "8b" | "14b" | "32b"
-interface Model {
-  id: string;
-  name: string;
-  display_name: string;
-  size: ModelSizeKey;
-  description: string;
-  is_active: boolean;
-}
+import type { Model, ModelSizeKey } from "../types/model";
 
 const modelSizes = {
   "1.5b": { icon: Activity, color: "bg-green-100 text-green-700 border-green-200", label: "Fast", description: "Quick responses, lower resource usage" },
@@ -34,67 +25,11 @@ export default function ModelsPage() {
   const loadModels = async () => {
     try {
       const modelList = await OllamaModelAPI.list() as Model[];
-      if (modelList.length === 0) {
-        // Initialize with default DeepSeek models
-        await initializeDefaultModels();
-      } else {
-        setModels(modelList);
-      }
+      setModels(modelList);
     } catch (error) {
       console.error("Error loading models:", error);
     }
     setIsLoading(false);
-  };
-
-  const initializeDefaultModels = async () => {
-    const defaultModels = [
-      {
-        name: "deepseek-r1:1.5b",
-        display_name: "DeepSeek R1 1.5B",
-        size: "1.5b",
-        description: "Fast and efficient model for quick responses",
-        is_active: true
-      },
-      {
-        name: "deepseek-r1:8b",
-        display_name: "DeepSeek R1 8B",
-        size: "8b",
-        description: "Balanced performance for most use cases",
-        is_active: true
-      },
-      {
-        name: "deepseek-r1:14b",
-        display_name: "DeepSeek R1 14B",
-        size: "14b",
-        description: "Enhanced reasoning capabilities",
-        is_active: true
-      },
-      {
-        name: "deepseek-r1:32b",
-        display_name: "DeepSeek R1 32B",
-        size: "32b",
-        description: "Maximum performance and capability",
-        is_active: true
-      }
-    ];
-
-    try {
-      for (const model of defaultModels) {
-        await OllamaModelAPI.create(model);
-      }
-      await loadModels();
-    } catch (error) {
-      console.error("Error initializing models:", error);
-    }
-  };
-
-  const toggleModelStatus = async (modelId: string, currentStatus: boolean) => {
-    try {
-      await OllamaModelAPI.update(modelId, { is_active: !currentStatus });
-      await loadModels();
-    } catch (error) {
-      console.error("Error updating model:", error);
-    }
   };
 
   if (isLoading) {
@@ -162,7 +97,7 @@ export default function ModelsPage() {
                   <Button
                     variant={model.is_active ? "outline" : "default"}
                     size="sm"
-                    onClick={() => toggleModelStatus(model.id, model.is_active)}
+                    // onClick={() => toggleModelStatus(model.id, model.is_active)}
                     className="flex-1"
                   >
                     {model.is_active ? 'Deactivate' : 'Activate'}
@@ -174,7 +109,7 @@ export default function ModelsPage() {
         })}
 
         {/* Add Model Card */}
-        <Card className="border-2 border-dashed border-gray-200 hover:border-gray-300 transition-colors cursor-pointer">
+        {/* <Card className="border-2 border-dashed border-gray-200 hover:border-gray-300 transition-colors cursor-pointer">
           <CardContent className="flex flex-col items-center justify-center h-full p-8 text-center">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
               <Plus className="w-8 h-8 text-gray-400" />
@@ -185,7 +120,7 @@ export default function ModelsPage() {
               Coming Soon
             </Button>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Usage Statistics */}

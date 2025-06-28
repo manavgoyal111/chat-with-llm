@@ -1,13 +1,32 @@
-import React from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import React, { useEffect, useState } from "react";
 import { Brain, Zap, Activity } from "lucide-react";
-import { Badge } from "../ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import type { ModelSelectorProps } from "../../types/message";
+import { OllamaModelAPI } from "../../entities/OllamaModel";
+import type { Model } from "../../types/model";
 
 interface ModelSizeInfo {
   icon: React.ComponentType<{ className?: string }>;
   color: string;
   label: string;
+}
+
+export interface ModelDetails {
+  parent_model: string;
+  format: string;
+  family: string;
+  families: string[];
+  parameter_size: string;
+  quantization_level: string;
+}
+
+export interface OllamaModel {
+  name: string;
+  model: string;
+  modified_at: string;
+  size: number;
+  digest: string;
+  details: ModelDetails;
 }
 
 const modelSizes: Record<string, ModelSizeInfo> = {
@@ -17,14 +36,21 @@ const modelSizes: Record<string, ModelSizeInfo> = {
   "32b": { icon: Brain, color: "bg-red-100 text-red-700", label: "Powerful" }
 };
 
-const ModelSelector: React.FC<ModelSelectorProps> = ({ selectedModel, onModelChange, models = [] }) => {
-  const defaultModels = [
-    { id: "1", name: "deepseek-r1:1.5b", display_name: "DeepSeek R1 1.5B", size: "1.5b", description: "Fast and efficient", is_active: true, created_date: "", updated_date: "", created_by: "" },
-    { id: "2", name: "deepseek-r1:8b", display_name: "DeepSeek R1 8B", size: "8b", description: "Balanced performance", is_active: true, created_date: "", updated_date: "", created_by: "" },
-    { id: "3", name: "deepseek-r1:14b", display_name: "DeepSeek R1 14B", size: "14b", description: "High capability", is_active: true, created_date: "", updated_date: "", created_by: "" },
-  ];
+const ModelSelector: React.FC<ModelSelectorProps> = ({ selectedModel, onModelChange }) => {
+  const [fetchedModels, setFetchedModels] = useState<Model[]>([]);
 
-  const availableModels = models.length > 0 ? models : defaultModels;
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        const modelList = await OllamaModelAPI.list() as Model[];
+        setFetchedModels(modelList);
+      } catch (error) {
+        console.error("Error loading models:", error);
+      }
+    };
+
+    fetchModels();
+  }, []);
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
@@ -32,16 +58,16 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ selectedModel, onModelCha
         <Brain className="w-5 h-5 text-gray-600" />
         <span className="font-semibold text-gray-800">Select Model</span>
       </div>
-      
+
       <Select value={selectedModel} onValueChange={onModelChange}>
         <SelectTrigger className="w-full bg-gray-50 border-0 focus:bg-white">
           <SelectValue placeholder="Choose a model..." />
         </SelectTrigger>
         <SelectContent>
-          {availableModels.map((model) => {
+          {fetchedModels.map((model) => {
             const sizeInfo = modelSizes[model.size] || modelSizes["8b"];
             const SizeIcon = sizeInfo.icon;
-            
+
             return (
               <SelectItem key={model.name} value={model.name} className="py-3">
                 <div className="flex items-center justify-between w-full">
@@ -52,9 +78,6 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ selectedModel, onModelCha
                       <div className="text-xs text-gray-500">{model.description}</div>
                     </div>
                   </div>
-                  <Badge variant="secondary" className={`${sizeInfo.color} text-xs`}>
-                    {sizeInfo.label}
-                  </Badge>
                 </div>
               </SelectItem>
             );
